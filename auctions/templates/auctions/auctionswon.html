@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Auctions Won</h2>
+    <br/>
+    <ul>
+    {% for listing in auctionswon %}
+      {% if listing.active == False %}
+        <li>
+          <a href="{% url 'listing' listing.title %}">{{ listing.title }}</a>
+        </li>
+    {% endif %}
+    {% endfor %}
+    </ul>
+
+{% endblock %}

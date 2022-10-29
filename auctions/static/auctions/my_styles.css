@@ -1,0 +1,45 @@
+body {
+    padding: 20px;
+}
+
+a{
+  text-decoration: underline !important; 
+  color: rgb(105, 5, 5) !important;
+}
+
+table {
+  border: 2px solid #424242;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 5px;
+  width: 1000px;
+  /* border-collapse: collapse; */
+
+}
+
+th {
+  text-align: center;
+  border: 2px solid #424242;
+  /* background-color: #e8a7a7; */
+  padding: 5px;
+  color: black;
+
+}
+
+td {
+  border: 2px solid #424242;
+  padding: 5px;
+  text-align: center;
+  color: black;
+}
+
+tr{
+  background-color: white;
+}
+
+
+tr:nth-child(even){
+  background-color: rgb(195, 220, 252);
+}
+
+

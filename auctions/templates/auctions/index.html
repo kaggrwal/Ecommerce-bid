@@ -1,0 +1,35 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    <br/>
+    <!-- <ul> -->
+    <!-- <li> -->
+    <table style="width:1000px; height:100px">
+        <thead>
+          <th style="width:220px;">Image</th>
+          <th style="width: 100px;">Seller</th>
+          <th style="width:300px; text-align:center">Description</th>
+          <th style="width:100px;">Current Price</th>
+          <th style="width:100px;">Category</th>
+        </thead>
+        <tbody>
+          {% for listing in active_listings %}
+
+          <tr>
+            <td style="width:220px;"><img src="{{listing.image_url}}" width="200px"></th>
+
+            <td><a href="{% url 'listing' listing.title %}"><strong>{{ listing.title }}</strong></a></td>
+            <td>{{ listing.description }} </td>
+            <td style="font-weight: 600;">{{ listing.current_price }} USD </td>
+            <td>{{ listing.category }} </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <!-- </li> -->
+
+ 
+    <!-- </ul> -->
+
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ listing.title }}</h2>
+    </br>
+    </br>
+    <h3><span id="count">0</span> People are bidding on this item</h3>
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+    <script>
+
+    // Enable pusher logging - don't include this in production
+    Pusher.logToConsole = true;
+
+    var pusher = new Pusher('9a86192d4367cb474002', {
+      cluster: 'ap2'
+    });
+    const countEl = document.getElementById('count');
+    var channelName = "listing-"+"{{listing.title}}";
+    var channel = pusher.subscribe(channelName);
+    channel.bind('pusher:subscription_count', function(data) {
+        countEl.innerHTML = data.subscription_count;
+    });
+
+
+    var channel = pusher.subscribe('cache-listing');
+   channel.bind('listing-updated', function(data) {
+     var titleElements = document.getElementsByClassName('listing-row')
+     for (let index = 0; index < titleElements.length; index++) {
+    var titleEl = titleElements[index];
+    var el = titleEl.getElementsByTagName('strong') && titleEl.getElementsByTagName('strong').length > 0 ? titleEl.getElementsByTagName('strong')[0].innerText == data.title : ''
+    console.log(el);
+    if(el) {
+        titleEl.getElementsByClassName('current_price')[0].innerHTML = data.current_price;
+        break;
+     }
+     
+  }
+   });
+
+
+  </script>
+    <br/>
+    <table>
+        <thead>
+          <th id="image_url"><img src="{{listing.image_url}}" width="200px"></th>
+          <th style="width:300px; text-align:center">Description</th>
+          <th>Current Price</th>
+          <th>Category</th>
+          <th>Seller</th>
+        </thead>
+        <tbody>
+          <tr class="listing-row">
+            <td><a href="{% url 'listing' listing.title %}"><strong id="title">{{ listing.title }}</strong></td>
+            <td id="description">{{ listing.description }} </td>
+            <td class="current_price">{{ listing.current_price }} USD </td>
+            <td id="category">{{ listing.category }} </td>
+            <td>{{ listing.owner }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <br/>
+      {% if user.is_authenticated %}
+        {% if is_owner and listing.active %}
+          <form action="{% url 'listing' listing.title %}"
+            method="post" style="width:300px">
+            {% csrf_token %}
+            <input class="btn btn-primary" name="close_listing_button"
+              type="submit" value="Close this Listing">
+          </form>
+          <br/>
+        {% endif %}
+        {% if is_winner %}
+          <h2>Congratulations! You have won this auction.</h2>
+        {% else %}
+        {% if in_watchlist is False and listing.active %}
+          <form action="{% url 'listing' listing.title %}"
+            method="post" style="width:300px">
+            {% csrf_token %}
+            <input class="btn btn-primary" name="watchlist_add_button"
+              type="submit" value="Add to Watchlist">
+          </form>
+        {% endif %}
+        {% if in_watchlist and listing.active %}
+          <form action="{% url 'listing' listing.title %}"
+            method="post" style="width:300px">
+            {% csrf_token %}
+            <input class="btn btn-primary" name="watchlist_remove_button"
+              type="submit" value="Remove from Watchlist">
+          </form>
+        {% endif %}
+        {% endif %}
+        {% if listing.active %}
+          <br/><br/><br/>
+          <form action="{% url 'listing' listing.title %}"
+            method="post" style="width:300px">
+            {% csrf_token %}
+            <label>Place a Bid: </label>
+            <input autofocus class="form-control" type="number"
+              name="bid" min="{{ min_bid }}"
+              placeholder="You must bid at least {{ min_bid }} USD">
+            <input class="btn btn-primary" name="bid_form" type="submit" value="Bid">
+          </form>
+          <br/><br/><br/>
+          <form action="{% url 'listing' listing.title %}"
+            method="post" style="width:500px; height:300px">
+            {% csrf_token %}
+            <label>Make a Comment: </label>
+            <textarea name="comment" rows="8" cols="80"
+              style="height:100px; padding:5px" placeholder="Your Comment"></textarea>
+            <input class="btn btn-primary" name="comment_form" type="submit"
+              value="Post Comment">
+          </form>
+          {% endif %}
+      {% endif %}
+
+      <h3>Comments: </h3>
+      <ul>
+      {% for comment in comments %}
+        <li><strong>{{ comment.commented_by }}: </strong>{{ comment.comment }}</li>
+      {% endfor %}
+      </ul>
+      <br/><br/><br/><br/><br/><br/>
+{% endblock %}
